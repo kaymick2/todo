@@ -45,7 +45,21 @@ async function writeTheData(item){
   const result=await response.json();
   console.log(result);
   setIsLoading(false);
-} 
+  
+}
+const deleteItem = async (id,text) => {
+  setIsLoading(true);
+  try {
+    const deleteUndo=text;
+    await fetch(`https://cc9vathen7.execute-api.us-east-2.amazonaws.com/dev/deleting?user=kay&id=${id}`);
+    setListItems((prevItems) => prevItems.filter(item => item.id !== id));
+    window.location.reload();
+  } catch (error) {
+    console.error("An error occurred while deleting data");
+  } finally {
+    setIsLoading(false);
+  }
+}; 
   return (
     <div>
       <h3>Reading my Database</h3>
@@ -58,8 +72,14 @@ async function writeTheData(item){
       ) :
        
       <ul>
-            {listItems.map((item)=>(<li key={item.id}>{item.text}</li>))}
-          </ul> 
+          {listItems.map((item, index) => (
+            <li key={index}>
+              {item.text}
+              <button onClick={() => deleteItem(item.id)}>X
+              </button>
+            </li>
+          ))}
+        </ul>
     }
     </div>
    );
