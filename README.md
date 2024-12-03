@@ -1,4 +1,7 @@
-# Getting Started with Create React App
+# This is a fully functioning todo list with api calls. it currently only has one user, but can be scaled to have multiple. it is found [HERE](https://master.d2zq0mj5eaefxe.amplifyapp.com/)
+after you click delete, you can use the undo delete option. because of me running out of time, delete does not reFetch data from the API. whoops.
+------------------------------------------------
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
