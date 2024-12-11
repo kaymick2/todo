@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import UpdateModal from './UpdateModal';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -7,8 +8,10 @@ const App = () => {
   const [inputValue, setInputValue] = useState('');
   const [deletedItem, setDeletedItem] = useState(null);
   const [updateTrigger, setUpdateTrigger] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentEditItem, setCurrentEditItem] = useState(null);
 
-async function fetchTheData(){
+  async function fetchTheData() {
     setIsLoading(true);
     try {
       const response = await fetch(`https://09kjtgt235.execute-api.us-east-2.amazonaws.com/dev/reading?id=dd2436ca-638d-4516-85b2-4de269157347&user=kay`);
@@ -19,7 +22,7 @@ async function fetchTheData(){
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     fetchTheData();
@@ -33,7 +36,7 @@ async function fetchTheData(){
     try {
       await writeTheData(inputValue);
       setInputValue('');
-      setUpdateTrigger(prev => !prev); // Toggle the state to trigger useEffect
+      setUpdateTrigger((prev) => !prev);
     } catch (error) {
       console.error("An error occurred while writing data");
     }
@@ -44,7 +47,7 @@ async function fetchTheData(){
       if (deletedItem) {
         await writeTheData(deletedItem.text);
         setDeletedItem(null);
-        setUpdateTrigger(prev => !prev); // Trigger useEffect to update the list
+        setUpdateTrigger((prev) => !prev);
       }
     } catch (error) {
       console.error("An error occurred while undoing delete");
@@ -60,7 +63,7 @@ async function fetchTheData(){
         method: 'GET',
       });
       const result = await response.json();
-      return { id: result.id, text }; // Assuming the API returns the new item's ID
+      return { id: result.id, text };
     } catch (error) {
       console.error("An error occurred while writing data");
       throw error;
@@ -69,14 +72,14 @@ async function fetchTheData(){
     }
   };
 
-  async function deleteItem (id, text) {
+  async function deleteItem(id, text) {
     setIsLoading(true);
     try {
       setDeletedItem({ id, text });
       const response = await fetch(`https://cc9vathen7.execute-api.us-east-2.amazonaws.com/dev/deleting?user=kay&id=${id}`, {
-       mode:'no-cors'
+        mode: 'no-cors',
       });
-      if (!response.status===0){
+      if (!response.status === 0) {
         console.info("Expected opaque response (code 0) and got something else. You may want to refresh the page.");
       }
     } catch (error) {
@@ -84,39 +87,53 @@ async function fetchTheData(){
     } finally {
       setIsLoading(false);
     }
-  };
-  const handleDeleteItem = async (id,text) => {
+  }
+
+  const handleDeleteItem = async (id, text) => {
     try {
-      await deleteItem(id,text); // Wait for the deletion to complete
-      await fetchTheData(); // Refresh the list of items after deletion
+      await deleteItem(id, text);
+      await fetchTheData();
     } catch (error) {
-      setIsError(true); // Handle any error in deleting the item
+      setIsError(true);
     }
   };
+
+  const handleEditItem = (item) => {
+    setCurrentEditItem(item);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdate = async (id, newText) => {
+    try {
+      const encodeText = encodeURIComponent(newText);
+      const url = `https://wk1jgumzl6.execute-api.us-east-2.amazonaws.com/dev/updating?text=${encodeText}&id=${id}&user=kay`;
+      await fetch(url, { method: 'GET' });
+      await fetchTheData(); // Refetch data immediately after update
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("An error occurred while updating the item", error);
+    }
+  };
+
+  const listItems1 = listItems.map(item => (
+    <div key={item.id}>
+      <button onClick={() => handleEditItem(item)} style={{ width: '150px' }}>{item.text}</button>
+      <button onClick={() => handleDeleteItem(item.id, item.text)}>remove</button>
+    </div>
+  ));
+
   return (
     <div>
       <h1>DataSoBased</h1>
       <input type="text" value={inputValue} onChange={handleTextChange} />
       <button onClick={buttonHandler}>ADD STUFF</button>
-      {deletedItem && <button onClick={undoDelete}>UNDO DELETE</button>}
       {isError && <p>Erroneous state ...</p>}
       {isLoading ? (
         <p>Fingering Jeff Bezos...</p>
       ) : (
-        <ul>
-          {listItems.map((item, index) => (
-           <li key={index}>
-           {item.text}
-           <button 
-             style={{ marginLeft: '10px' }} 
-             onClick={() => handleDeleteItem(item.id, item.text)}
-           >
-             X
-           </button>
-         </li>
-          ))}
-        </ul>
+        <div>{listItems1}</div>
       )}
+      {isModalOpen && <UpdateModal user={currentEditItem.user} id={currentEditItem.id} text={currentEditItem.text} onClose={() => setIsModalOpen(false)} update={handleUpdate} />}
     </div>
   );
 };

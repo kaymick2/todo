@@ -1,0 +1,80 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.75);
+  }
+  
+.cart {
+    position: fixed;
+    border: 5px solid lightgray;
+    border-width: thin;
+    top: 20vh;
+    left: calc(50% - 20rem);
+    width: 14rem;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 8px;
+    text-align: left;
+  }
+
+  .row1, .row2 {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .row1 {
+    margin-bottom: 1rem;
+  }
+
+  .row1 div {
+    font-size: 0.5 rem;
+    margin-right: 30px
+  }
+
+  .row2 button.close, .row2 button.update {
+    padding: 0px;
+    width: 70px;
+  }
+
+  .row2 button.close {
+    margin-right: 30px;
+  }
+  
+  .cart h2 {
+    margin: 0;
+  }
+  
+  .total {
+    font-weight: bold;
+    font-size: 1.25rem;
+    text-align: right;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .actions button {
+    font: inherit;
+    cursor: pointer;
+    background-color: #fdd4ab;
+    color: #2f2d2b;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+  }
+  
+  .actions button:hover {
+    font: inherit;
+    cursor: pointer;
+    background-color: #f8c897;
+    color: #2f2d2b;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+  }
