@@ -11,16 +11,13 @@ const App = () => {
   const [currentEditItem, setCurrentEditItem] = useState(null);
 
   async function fetchTheData() {
-    setIsLoading(true);
     try {
       const response = await fetch(`https://09kjtgt235.execute-api.us-east-2.amazonaws.com/dev/reading?id=dd2436ca-638d-4516-85b2-4de269157347&user=kay`);
       const result = await response.json();
       setListItems(result);
     } catch (error) {
       setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   }
 
   useEffect(() => {
@@ -89,17 +86,18 @@ const App = () => {
     setIsModalOpen(true);
   };
 
-  const handleUpdate = async (id, newText) => {
-    try {
-      const encodeText = encodeURIComponent(newText);
-      const url = `https://wk1jgumzl6.execute-api.us-east-2.amazonaws.com/dev/updating?text=${encodeText}&id=${id}&user=kay`;
-      await fetch(url, { method: 'GET' });
-      setIsModalOpen(false);
-      await fetchTheData(); // Refetch data immediately after update
-    } catch (error) {
-      console.error("An error occurred while updating the item", error);
-    }
-  };
+async function handleUpdate(id,newText) {
+      try {
+        const encodeText = encodeURIComponent(newText);
+        const url= await fetch(`https://wk1jgumzl6.execute-api.us-east-2.amazonaws.com/dev/updating?text=${encodeText}&id=${id}&user=kay`, { method: 'GET',mode:"no-cors"});
+        console.log(url.status);
+        setIsModalOpen(false);
+        await fetchTheData(); // Refetch data immediately after update
+      } catch (error) {
+        console.error("An error occurred while updating the item", error);
+      }
+    
+}
 
   const listItems1 = listItems.map(item => (
     <div key={item.id}>
