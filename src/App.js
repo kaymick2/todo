@@ -6,7 +6,6 @@ const App = () => {
   const [isError, setIsError] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [deletedItem, setDeletedItem] = useState(null);
   const [updateTrigger, setUpdateTrigger] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState(null);
@@ -42,18 +41,6 @@ const App = () => {
     }
   };
 
-  const undoDelete = async () => {
-    try {
-      if (deletedItem) {
-        await writeTheData(deletedItem.text);
-        setDeletedItem(null);
-        setUpdateTrigger((prev) => !prev);
-      }
-    } catch (error) {
-      console.error("An error occurred while undoing delete");
-    }
-  };
-
   const writeTheData = async (text) => {
     const encodeItem = encodeURIComponent(text);
     setIsLoading(true);
@@ -75,7 +62,6 @@ const App = () => {
   async function deleteItem(id, text) {
     setIsLoading(true);
     try {
-      setDeletedItem({ id, text });
       const response = await fetch(`https://cc9vathen7.execute-api.us-east-2.amazonaws.com/dev/deleting?user=kay&id=${id}`, {
         mode: 'no-cors',
       });
@@ -108,8 +94,8 @@ const App = () => {
       const encodeText = encodeURIComponent(newText);
       const url = `https://wk1jgumzl6.execute-api.us-east-2.amazonaws.com/dev/updating?text=${encodeText}&id=${id}&user=kay`;
       await fetch(url, { method: 'GET' });
-      await fetchTheData(); // Refetch data immediately after update
       setIsModalOpen(false);
+      await fetchTheData(); // Refetch data immediately after update
     } catch (error) {
       console.error("An error occurred while updating the item", error);
     }
@@ -133,7 +119,14 @@ const App = () => {
       ) : (
         <div>{listItems1}</div>
       )}
-      {isModalOpen && <UpdateModal user={currentEditItem.user} id={currentEditItem.id} text={currentEditItem.text} onClose={() => setIsModalOpen(false)} update={handleUpdate} />}
+{isModalOpen && (
+  <UpdateModal
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    onUpdate={handleUpdate}
+    item={currentEditItem}
+  />
+)}
     </div>
   );
 };

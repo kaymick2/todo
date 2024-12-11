@@ -16,7 +16,6 @@ const UpdateModal = ({ isOpen, onClose, onUpdate, item }) => {
   const handleUpdate = () => {
     if (item && item.id) {
       onUpdate(item.id, text);
-      onClose();
     }
   };
 
